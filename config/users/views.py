@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializer import UserSerializer
 from .models import users
+import datetime
+import pytz
 # Create your views here.
 
 class InfoView(APIView):
@@ -16,9 +18,11 @@ class InfoView(APIView):
 
     def post(self,request):
         user = users.objects.filter(user_id=request.query_params.get('user_id'))
+        print(user)
         if user.exists():
-            user.update(user_id=request.data['user_id'])
-            return Response(status=status.HTTP_202_ACCEPTED)
+            serializer = UserSerializer(user,many=True)
+            user.update(user_id=request.data['user_id'],username=request.data['username'])
+            return Response(status=status.HTTP_202_ACCEPTED, data=serializer.data)
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -30,5 +34,21 @@ class ChangeView(APIView):
 
     def post(self,request):
         user = users.objects.filter(user_id=request.query_params.get('user_id'))
-        user.update(plan=request.query_params.get('charge'))
-        return Response(status=status.HTTP_200_OK, data={'info':f'{user[0].plan}'})
+        if user.exists():
+            
+            serializer = UserSerializer(user,many=True)
+            date = user[0].changed_date
+            print(date)
+            date = str(date).replace('+00:00','')
+            chaged_date = datetime.datetime.strptime(f"{date}","%Y-%m-%d %H:%M:%S.%f")
+            exp = datetime.timedelta(days=7)
+            exp_date = chaged_date + exp
+            if datetime.datetime.now() < exp_date :
+                if user[0].change_count < 3 :
+                    print(exp_date , user[0].change_count)
+                    user.update(change_count = user[0].change_count + 1)
+                    return Response(status=status.HTTP_200_OK, data=serializer.data)
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'erorrs' : f'You cannot change your token until {exp_date}'})
+            user.update(change_count = 0, changed_date=datetime.datetime.now(pytz.timezone('Asia/Tehran')))
+            return Response(status=status.HTTP_200_OK, data=serializer.data)
+        return Response(status=status.HTTP_404_NOT_FOUND, data={'errors' : 'user not found ! '})

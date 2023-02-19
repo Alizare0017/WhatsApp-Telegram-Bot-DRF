@@ -13,4 +13,5 @@ class users(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     exp_date = models.DateTimeField(null=True)
-    change_count = models.IntegerField(default=3)
+    changed_date = models.DateTimeField(null=True)
+    change_count = models.IntegerField(default=0)
