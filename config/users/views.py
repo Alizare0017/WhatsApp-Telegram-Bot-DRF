@@ -44,3 +44,4 @@ class ChangeView(APIView):
             user.update(change_count = 0, changed_date=datetime.datetime.now(pytz.timezone('Asia/Tehran')))
             return Response(status=status.HTTP_200_OK, data=serializer.data)
         return Response(status=status.HTTP_404_NOT_FOUND, data={'errors' : 'user not found ! '})
+
