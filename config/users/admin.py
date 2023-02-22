@@ -1,6 +1,6 @@
 from django.contrib import admin
-from users.models import users
+from users.models import User
 
 class UsersAdmin(admin.ModelAdmin):
-    list_display = ['username', 'user_id']
-admin.site.register(users, UsersAdmin)
+    list_display = ['username', 'userID']
+admin.site.register(User, UsersAdmin)
