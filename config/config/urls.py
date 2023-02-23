@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/api-auth/', include('rest_framework.urls')),
     path('api/users/', include('users.urls', namespace='users')),
     path('api/finance/', include('finance.urls', namespace='finance')),
+    path('payment/', include('payment.urls', namespace='payment')),
     path('schema/', SpectacularAPIView.as_view(), name ='schema'),
     path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
