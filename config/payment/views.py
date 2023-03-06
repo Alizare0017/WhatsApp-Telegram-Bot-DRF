@@ -24,6 +24,7 @@ CallbackURL = 'http://127.0.0.1:8080/verify/'
 class send_request(View):
     
     def get(self, request):
+
         data = {
         "MerchantID": settings.MERCHANT,
         "Amount": amount,
@@ -31,6 +32,7 @@ class send_request(View):
         "Phone": phone,
         "CallbackURL": CallbackURL,
     }
+
         data = json.dumps(data)
         headers = {'content-type': 'application/json', 'content-length': str(len(data)) }
         try:
@@ -51,21 +53,22 @@ class send_request(View):
 
 
 
-def verify(authority):
-    data = {
-        "MerchantID": settings.MERCHANT,
-        "Amount": amount,
-        "Authority": authority,
-    }
-    data = json.dumps(data)
-    # set content length by data
-    headers = {'content-type': 'application/json', 'content-length': str(len(data)) }
-    response = requests.post(ZP_API_VERIFY, data=data,headers=headers)
+class OrderVerifyView(View):
+    def get(self, request, authority):
+        data = {
+            "MerchantID": settings.MERCHANT,
+            "Amount": amount,
+            "Authority": authority,
+                }
+        data = json.dumps(data)
+        # set content length by data
+        headers = {'content-type': 'application/json', 'content-length': str(len(data)) }
+        response = requests.post(ZP_API_VERIFY, data=data,headers=headers)
 
-    if response.status_code == 200:
-        response = response.json()
-        if response['Status'] == 100:
-            return {'status': True, 'RefID': response['RefID']}
-        else:
-            return {'status': False, 'code': str(response['Status'])}
-    return response
+        if response.status_code == 200:
+            response = response.json()
+            if response['Status'] == 100:
+                return {'status': True, 'RefID': response['RefID']}
+            else:
+                return {'status': False, 'code': str(response['Status'])}
+        return response
