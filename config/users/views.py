@@ -9,21 +9,28 @@ import datetime
 
 # Create your views here.
 
-class InfoView(APIView):
+class UserLoginView(APIView):
 
     def post(self,request):
         user = User.objects.filter(userID=request.headers.get('Userid'))
+
         if user.exists():
             serializer = UserSerializer(user,many=True)
             user.update(userID=request.headers.get('Userid'),username=request.query_params.get('username'))
             return Response(status=status.HTTP_202_ACCEPTED, data=serializer.data)
+
         else :
             data = {'userID':request.headers.get('Userid'),'username':request.query_params['username']}
             serializer = UserSerializer(data=data)
+
             if serializer.is_valid():
                 serializer.save()
                 return Response(status=status.HTTP_200_OK, data=serializer.data)
+                
         return Response(status=status.HTTP_400_BAD_REQUEST, data={'error':serializer.errors})
+
+
+
 
 
 class ChangeView(APIView):

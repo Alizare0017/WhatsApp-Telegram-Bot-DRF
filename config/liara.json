@@ -1,9 +1,0 @@
-{
-    "app" : "django-app",
-    "disks" : [
-        {
-            "name" : "whatsapp",
-            "mountTo" : "data"
-        }
-    ] 
-}

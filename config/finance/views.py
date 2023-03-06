@@ -14,6 +14,7 @@ class SellView(APIView):
 
     def post(self,request):
         user = User.objects.filter(userID=request.headers.get('Userid'))
+
         if user.exists():
             exp = timedelta(days=30) + timezone.now()
             user.update(charge=user[0].charge+int(request.query_params['charge']),exp_date=exp,last_charge_date=timezone.now(),
@@ -23,9 +24,10 @@ class SellView(APIView):
             serializer = UserSerializer(user[0])
             
             return Response(status=status.HTTP_200_OK, data=serializer.data)
+
         return Response(status=status.HTTP_400_BAD_REQUEST, data={'error' : 'User not found'})
 
-  
+
 class FactorView(APIView):
 
     def post(self,request):
@@ -35,5 +37,7 @@ class FactorView(APIView):
             if factor.exists():
                 serializer = FactorSerializer(factor, many=True)
                 return Response(status=status.HTTP_200_OK, data=serializer.data)
+
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'error' : 'no factor found'})
+        
         return Response(status=status.HTTP_400_BAD_REQUEST, data={'error' : 'user not found'})
